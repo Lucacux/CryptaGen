@@ -23,11 +23,13 @@
 #define MAX_ARR 100 // Lower this value if NULL pointer is common in main func.
 #define TRUE 1
 #define FALSE 0
-#define DEFAULT 2
+#define DEFAULT 4
 // Function prototypes are defined.
 int passwordLength();
 void storePassword(char password[]);
+void seePassword(char password[]);
 void passwordLogic(int length, char password[]);
+void cleanScreen();
 void menu();
 
 int main() {
@@ -58,12 +60,15 @@ void passwordLogic(int length, char password[]) {
     }
 
     password[length] = '\0';
-    printf("Your new password is: \n%s\n", password);
+    printf("Your new password is:\n", password);
+    printf("------------------------------------\n");
+    printf("%s\n", password);
+    printf("------------------------------------\n");
     printf("Try another password?\n");
     printf("1. Yes, 0. Keep actual password\n");
     scanf("%d", &val);
     getchar();
-
+    system("clear");
     if (val != TRUE) {
         storePassword(password);
     }
@@ -76,6 +81,7 @@ void storePassword(char password[]) {
 
     if (file != NULL) {
         fprintf(file, "Password: %s\n", password);
+        printf("Success! : Your password was stored at 'passwords.txt'\n.");
         fclose(file);
     } else {
         printf("Failed to store your password, try again later.\n");
@@ -84,6 +90,27 @@ void storePassword(char password[]) {
     return;
 }
 
+void seePassword(char password[]) {
+  FILE *file = fopen("passwords.txt", "r");
+
+  if (file != NULL) {
+
+  while (fscanf(file,"Password: %99s", password ) == TRUE) {
+      printf("Stored password:\n");
+      printf("%s\n", password);
+  }
+      fclose(file);
+  } else {
+  printf("Failed to read your stored password, try again later\n");
+  }
+
+  return;
+}
+
+void cleanScreen() {
+  system("clear");
+  return;
+}
 void menu(char password[]) {
     int option;
 
@@ -91,7 +118,9 @@ void menu(char password[]) {
         printf("----------------------------------------------------------------\n");
         printf("Welcome to CryptaGen: a strong password generator written in C!\n");
         printf("1. Generate password\n");
-        printf("2. Exit program\n");
+        printf("2. See stored passwords\n");
+        printf("3. Clean screen\n");
+        printf("4. Exit program\n");
         printf("----------------------------------------------------------------\n");
         scanf("%d", &option);
         getchar();
@@ -102,7 +131,13 @@ void menu(char password[]) {
                 passwordLogic(ret_length, password);
                 break;
             case 2:
-                printf("Exiting CryptaGen... Stay secure!\n");
+                seePassword(password);
+                break;
+            case 3:
+                cleanScreen();
+                break;
+            case 4:
+                printf("Exiting CryptaGen... Stay secure !\n");
                 break;
         }
 
